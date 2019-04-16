@@ -24,6 +24,7 @@ type (
 		BuildPoolSize    int    `envconfig:"BUILD_POOL_SIZE" default:"4"`
 		UploadPoolSize   int    `envconfig:"UPLOAD_POOL_SIZE" default:"4"`
 		TagName          string `envconfig:"TAG_NAME" default:"latest"`
+		TagBuildID       string `envconfig:"TAG_BUILD_ID"`
 		Command          string `default:"docker"`
 		Workdir          string `default:"."`
 	}
@@ -333,7 +334,14 @@ func (b *build) prettyName() string {
 func (b *build) tags() []string {
 	tags := []string{fmt.Sprintf("%s/%s/%s:%s", c.Registry, b.Namespace, b.Name, b.Tag)}
 	for _, name := range b.AdditionalNames {
-		tags = append(tags, fmt.Sprintf("%s:%s", name, b.Tag))
+		tag := fmt.Sprintf("%s:%s", name, b.Tag)
+		tags = append(tags, tag)
+	}
+	buildID, err := envsubst.EvalEnv(c.TagBuildID)
+	if buildID != "" && err == nil {
+		for _, tag := range tags {
+			tags = append(tags, fmt.Sprintf("%s-b%s", tag, buildID))
+		}
 	}
 	return tags
 }
