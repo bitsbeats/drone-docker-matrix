@@ -163,7 +163,7 @@ func handleMatrix(name string, builds chan *build) {
 	if name == "." {
 		p, err := filepath.Abs(path)
 		if err != nil {
-			log.Errorf("%s unable to get directory name.")
+			log.Errorf("%s unable to get directory name.", id)
 		}
 		name = filepath.Base(p)
 	}
@@ -171,7 +171,7 @@ func handleMatrix(name string, builds chan *build) {
 	// without docker-matrix.yaml its just a normal build
 	if _, err := os.Stat(matrixFile); err != nil {
 		tag := c.TagName
-		if len(tag) == 0 {
+		if tag == "" {
 			tag = "latest"
 		}
 		matrixWg.Add(1)
@@ -257,11 +257,11 @@ ARGUMENTS:
 
 		// generate tag
 		tag := c.TagName
+		if tag == "" {
+			tag = "latest"
+		}
 		for _, key := range keyOrder {
 			tag = fmt.Sprintf("%s-%s", tag, scenario[key])
-		}
-		if len(tag) == 0 {
-			tag = "latest"
 		}
 		if tag[0:1] == "-" {
 			tag = tag[1:]
@@ -307,7 +307,6 @@ func pool(size int, builds chan *build, callback chan *build, wg *sync.WaitGroup
 
 // build an image
 func builder(b *build) {
-	log.Warnf("%s Building       %s", b.ID, b.prettyName())
 	err := b.build()
 	outStr := indent(string(b.Output), "  ")
 	if err != nil {
@@ -317,7 +316,6 @@ func builder(b *build) {
 
 // upload an image
 func uploader(b *build) {
-	log.Warnf("%s Uploading      %s", b.ID, b.prettyName())
 	err := b.upload()
 	outStr := indent(string(b.Output), "  ")
 	if err != nil {
@@ -327,27 +325,32 @@ func uploader(b *build) {
 
 // prettyName
 func (b *build) prettyName() string {
-	return fmt.Sprintf("%s/%s/%s:%s", c.Registry, b.Namespace, b.Name, b.Tag)
+	tag := strings.TrimPrefix(b.Tag, "latest-")
+	return fmt.Sprintf("%s:%s", b.Name, tag)
 }
 
 // gather tags
-func (b *build) tags() []string {
-	tags := []string{fmt.Sprintf("%s/%s/%s:%s", c.Registry, b.Namespace, b.Name, b.Tag)}
-	for _, name := range b.AdditionalNames {
-		tag := fmt.Sprintf("%s:%s", name, b.Tag)
-		tags = append(tags, tag)
+func (b *build) tags() (combined []string) {
+	images := append(b.AdditionalNames, fmt.Sprintf("%s/%s/%s", c.Registry, b.Namespace, b.Name))
+	buildID, _ := envsubst.EvalEnv(c.TagBuildID)
+
+	tags := []string{b.Tag}
+	if buildID != "" {
+		tags = append(tags, fmt.Sprintf("%s-%s", b.Tag, buildID))
 	}
-	buildID, err := envsubst.EvalEnv(c.TagBuildID)
-	if buildID != "" && err == nil {
+	for _, name := range images {
 		for _, tag := range tags {
-			tags = append(tags, fmt.Sprintf("%s-b%s", tag, buildID))
+			tag = strings.TrimPrefix(tag, "latest-")
+			tag := fmt.Sprintf("%s:%s", name, tag)
+			combined = append(combined, tag)
 		}
 	}
-	return tags
+	return combined
 }
 
 // build command argument
 func (b *build) args() []string {
+	log.Warnf("%s Building       %s", b.ID, b.prettyName())
 	args := []string{"build", b.Path}
 	for _, k := range b.KeyOrder {
 		args = append(args, "--build-arg", fmt.Sprintf("%s=%s", k, b.Scenario[k]))
@@ -369,6 +372,7 @@ func (b *build) build() (err error) {
 // upload image
 func (b *build) upload() (err error) {
 	for _, tag := range b.tags() {
+		log.Warnf("%s Uploading      %s", b.ID, tag)
 		cmd := exec.Command(c.Command, "push", tag)
 		_ = cmd.Wait()
 		subOut, err := cmd.CombinedOutput()

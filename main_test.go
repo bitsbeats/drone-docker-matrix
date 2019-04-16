@@ -17,6 +17,7 @@ func TestBuild(t *testing.T) {
 		BuildPoolSize:    10,
 		UploadPoolSize:   10,
 		TagName:          "latest",
+		TagBuildID:       "7",
 		Command:          "echo",
 		Workdir:          "testdata",
 	}
@@ -33,32 +34,49 @@ func TestBuild(t *testing.T) {
 		}
 	})
 
-	want := `build php -t localhost:5000/images/php:latest-7.2-alpine-test -t docker.io/bitsbeats/image1:latest-7.2-alpine-test -t docker.io/bitsbeats/image2:latest-7.2-alpine-test
-push localhost:5000/images/php:latest-7.2-alpine-test
-push docker.io/bitsbeats/image1:latest-7.2-alpine-test
-push docker.io/bitsbeats/image2:latest-7.2-alpine-test
-build php -t localhost:5000/images/php:latest-7.3-alpine-test -t docker.io/bitsbeats/image1:latest-7.3-alpine-test -t docker.io/bitsbeats/image2:latest-7.3-alpine-test
-push localhost:5000/images/php:latest-7.3-alpine-test
-push docker.io/bitsbeats/image1:latest-7.3-alpine-test
-push docker.io/bitsbeats/image2:latest-7.3-alpine-test
-build php -t localhost:5000/images/php:latest-7.2-debian-test -t docker.io/bitsbeats/image1:latest-7.2-debian-test -t docker.io/bitsbeats/image2:latest-7.2-debian-test
-push localhost:5000/images/php:latest-7.2-debian-test
-push docker.io/bitsbeats/image1:latest-7.2-debian-test
-push docker.io/bitsbeats/image2:latest-7.2-debian-test
-build php -t localhost:5000/images/php:latest-7.3-debian-test -t docker.io/bitsbeats/image1:latest-7.3-debian-test -t docker.io/bitsbeats/image2:latest-7.3-debian-test
-push localhost:5000/images/php:latest-7.3-debian-test
-push docker.io/bitsbeats/image1:latest-7.3-debian-test
-push docker.io/bitsbeats/image2:latest-7.3-debian-test
-build busybox -t localhost:5000/images/busybox:latest
+	want := `build busybox -t localhost:5000/images/busybox:latest -t localhost:5000/images/busybox:7
+build python -t localhost:5000/images/python:2.7-alpine -t localhost:5000/images/python:2.7-alpine-7
+build python -t localhost:5000/images/python:2.7-stretch -t localhost:5000/images/python:2.7-stretch-7
+build python -t localhost:5000/images/python:3.6-alpine -t localhost:5000/images/python:3.6-alpine-7
+build python -t localhost:5000/images/python:3.6-stretch -t localhost:5000/images/python:3.6-stretch-7
+build php -t docker.io/bitsbeats/image1:7.2-alpine-test -t docker.io/bitsbeats/image1:7.2-alpine-test-7 -t docker.io/bitsbeats/image2:7.2-alpine-test -t docker.io/bitsbeats/image2:7.2-alpine-test-7 -t localhost:5000/images/php:7.2-alpine-test -t localhost:5000/images/php:7.2-alpine-test-7
+build php -t docker.io/bitsbeats/image1:7.2-debian-test -t docker.io/bitsbeats/image1:7.2-debian-test-7 -t docker.io/bitsbeats/image2:7.2-debian-test -t docker.io/bitsbeats/image2:7.2-debian-test-7 -t localhost:5000/images/php:7.2-debian-test -t localhost:5000/images/php:7.2-debian-test-7
+build php -t docker.io/bitsbeats/image1:7.3-alpine-test -t docker.io/bitsbeats/image1:7.3-alpine-test-7 -t docker.io/bitsbeats/image2:7.3-alpine-test -t docker.io/bitsbeats/image2:7.3-alpine-test-7 -t localhost:5000/images/php:7.3-alpine-test -t localhost:5000/images/php:7.3-alpine-test-7
+build php -t docker.io/bitsbeats/image1:7.3-debian-test -t docker.io/bitsbeats/image1:7.3-debian-test-7 -t docker.io/bitsbeats/image2:7.3-debian-test -t docker.io/bitsbeats/image2:7.3-debian-test-7 -t localhost:5000/images/php:7.3-debian-test -t localhost:5000/images/php:7.3-debian-test-7
+push docker.io/bitsbeats/image1:7.2-alpine-test
+push docker.io/bitsbeats/image1:7.2-alpine-test-7
+push docker.io/bitsbeats/image1:7.2-debian-test
+push docker.io/bitsbeats/image1:7.2-debian-test-7
+push docker.io/bitsbeats/image1:7.3-alpine-test
+push docker.io/bitsbeats/image1:7.3-alpine-test-7
+push docker.io/bitsbeats/image1:7.3-debian-test
+push docker.io/bitsbeats/image1:7.3-debian-test-7
+push docker.io/bitsbeats/image2:7.2-alpine-test
+push docker.io/bitsbeats/image2:7.2-alpine-test-7
+push docker.io/bitsbeats/image2:7.2-debian-test
+push docker.io/bitsbeats/image2:7.2-debian-test-7
+push docker.io/bitsbeats/image2:7.3-alpine-test
+push docker.io/bitsbeats/image2:7.3-alpine-test-7
+push docker.io/bitsbeats/image2:7.3-debian-test
+push docker.io/bitsbeats/image2:7.3-debian-test-7
 push localhost:5000/images/busybox:latest
-build python -t localhost:5000/images/python:latest-2.7-alpine
-build python -t localhost:5000/images/python:latest-2.7-stretch
-build python -t localhost:5000/images/python:latest-3.6-alpine
-build python -t localhost:5000/images/python:latest-3.6-stretch
-push localhost:5000/images/python:latest-2.7-alpine
-push localhost:5000/images/python:latest-2.7-stretch
-push localhost:5000/images/python:latest-3.6-alpine
-push localhost:5000/images/python:latest-3.6-stretch
+push localhost:5000/images/busybox:7
+push localhost:5000/images/php:7.2-alpine-test
+push localhost:5000/images/php:7.2-alpine-test-7
+push localhost:5000/images/php:7.2-debian-test
+push localhost:5000/images/php:7.2-debian-test-7
+push localhost:5000/images/php:7.3-alpine-test
+push localhost:5000/images/php:7.3-alpine-test-7
+push localhost:5000/images/php:7.3-debian-test
+push localhost:5000/images/php:7.3-debian-test-7
+push localhost:5000/images/python:2.7-alpine
+push localhost:5000/images/python:2.7-alpine-7
+push localhost:5000/images/python:2.7-stretch
+push localhost:5000/images/python:2.7-stretch-7
+push localhost:5000/images/python:3.6-alpine
+push localhost:5000/images/python:3.6-alpine-7
+push localhost:5000/images/python:3.6-stretch
+push localhost:5000/images/python:3.6-stretch-7
 `
 
 	wantList := strings.Split(want, "\n")
