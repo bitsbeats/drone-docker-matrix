@@ -111,11 +111,17 @@ func scan(path string, finisher func(chan *build)) {
 	go pool(c.BuildPoolSize, builds, uploads, &buildWg, builder)
 	go pool(c.UploadPoolSize, uploads, finished, &uploadWg, uploader)
 
-	// check for files
-	err := os.Chdir(path)
+	// go to docker image folder
+	oldPath, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("Failed to change directory to %s", path)
+		log.Fatalf("Failed to get current workdir %s", err)
 	}
+	err = os.Chdir(path)
+	if err != nil {
+		log.Fatalf("Failed to change directory to %s: %s", path, err)
+	}
+
+	// check for files
 	err = filepath.Walk(".", func(file string, info os.FileInfo, err error) error {
 		name := filepath.Base(filepath.Dir(file))
 		filename := filepath.Base(file)
@@ -135,6 +141,12 @@ func scan(path string, finisher func(chan *build)) {
 	close(builds)
 	close(uploads)
 	close(finished)
+
+	// return to old working directory, required to run tests multiple times
+	err = os.Chdir(oldPath)
+	if err != nil {
+		log.Fatalf("Failed to change directory to %s: %s", path, err)
+	}
 }
 
 func handleMatrix(name string, builds chan *build) {

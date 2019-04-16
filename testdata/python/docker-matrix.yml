@@ -1,0 +1,8 @@
+multiply:
+  VERSION:
+    - 2.7
+    - 3.6
+  
+  OS:
+    - alpine
+    - stretch

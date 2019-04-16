@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	log "github.com/sirupsen/logrus"
 )
 
 func TestBuild(t *testing.T) {
@@ -23,6 +24,7 @@ func TestBuild(t *testing.T) {
 	scan(c.Workdir, func(finished chan *build) {
 		for b := range finished {
 			got += string(b.Output)
+			log.Infof("%s Done           %s", b.ID, b.prettyName())
 			matrixWg.Done()
 		}
 	})
@@ -43,6 +45,16 @@ build php -t localhost:5000/images/php:latest-7.3-debian-test -t docker.io/bitsb
 push localhost:5000/images/php:latest-7.3-debian-test
 push docker.io/bitsbeats/image1:latest-7.3-debian-test
 push docker.io/bitsbeats/image2:latest-7.3-debian-test
+build busybox -t localhost:5000/images/busybox:latest
+push localhost:5000/images/busybox:latest
+build python -t localhost:5000/images/python:latest-2.7-alpine
+build python -t localhost:5000/images/python:latest-2.7-stretch
+build python -t localhost:5000/images/python:latest-3.6-alpine
+build python -t localhost:5000/images/python:latest-3.6-stretch
+push localhost:5000/images/python:latest-2.7-alpine
+push localhost:5000/images/python:latest-2.7-stretch
+push localhost:5000/images/python:latest-3.6-alpine
+push localhost:5000/images/python:latest-3.6-stretch
 `
 
 	wantList := strings.Split(want, "\n")
