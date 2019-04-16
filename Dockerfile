@@ -17,7 +17,7 @@ RUN true \
 
 # ---
 
-FROM alpine
+FROM docker
 
 RUN true \
   && apk add -U --no-cache ca-certificates
