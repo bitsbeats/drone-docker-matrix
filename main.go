@@ -68,6 +68,7 @@ type (
 		ID              ksuid.KSUID
 		Namespace       string
 		Name            string
+		Path            string
 		Tag             string
 		Scenario        map[string]string
 		KeyOrder        []string
@@ -157,6 +158,15 @@ func handleMatrix(name string, builds chan *build) {
 	id := ksuid.New()
 	matrixFile := filepath.Join(name, "docker-matrix.yml")
 
+	path := name
+	if name == "." {
+		p, err := filepath.Abs(path)
+		if err != nil {
+			log.Errorf("%s unable to get directory name.")
+		}
+		name = filepath.Base(p)
+	}
+
 	// without docker-matrix.yaml its just a normal build
 	if _, err := os.Stat(matrixFile); err != nil {
 		tag := c.TagName
@@ -168,6 +178,7 @@ func handleMatrix(name string, builds chan *build) {
 			ID:              id,
 			Namespace:       c.DefaultNamespace,
 			Name:            name,
+			Path:            path,
 			Tag:             tag,
 			Scenario:        make(map[string]string),
 			AdditionalNames: []string{},
@@ -179,20 +190,20 @@ func handleMatrix(name string, builds chan *build) {
 	// load matrix
 	fileContent, err := ioutil.ReadFile(matrixFile)
 	if err != nil {
-		log.Errorf("--------------------------- Failed to load %s", matrixFile)
+		log.Errorf("%s failed to load %s", id, matrixFile)
 		return
 	}
 	var m matrix
 	err = yaml.Unmarshal(fileContent, &m)
 	if err != nil {
-		log.Errorf("--------------------------- Unable to parse '%s': %s", matrixFile, err)
+		log.Errorf("%s unable to parse '%s': %s", id, matrixFile, err)
 		return
 	}
 
 	// multiply options
 	keyOrder := []string{}
 	scenariosMatrix := []map[string]string{map[string]string{}}
-	MATRIX:
+MATRIX:
 	for _, multiplyItem := range m.Multiply {
 		// type conversion (no matter what the yaml has, we want strings)
 		argument := fmt.Sprintf("%v", multiplyItem.Key)
@@ -224,7 +235,7 @@ func handleMatrix(name string, builds chan *build) {
 	}
 
 	// append options
-	ARGUMENTS:
+ARGUMENTS:
 	for _, scenarioMatrix := range scenariosMatrix {
 		scenario := make(map[string]string)
 		for k, v := range scenarioMatrix {
@@ -265,6 +276,7 @@ func handleMatrix(name string, builds chan *build) {
 			ID:              id,
 			Namespace:       namespace,
 			Name:            name,
+			Path:            path,
 			Tag:             tag,
 			Scenario:        scenario,
 			AdditionalNames: m.AdditionalNames,
@@ -298,7 +310,7 @@ func builder(b *build) {
 	err := b.build()
 	outStr := indent(string(b.Output), "  ")
 	if err != nil {
-		log.Errorf("%s Build failed   %s, b.ID, %s\n  >> Arguments: %s\n%s\n", b.ID, b.prettyName(), err, b.args(), outStr)
+		log.Errorf("%s Build failed   %s, %s\n  >> Arguments: %s\n%s\n", b.ID, b.prettyName(), err, b.args(), outStr)
 	}
 }
 
@@ -328,7 +340,7 @@ func (b *build) tags() []string {
 
 // build command argument
 func (b *build) args() []string {
-	args := []string{"build", b.Name}
+	args := []string{"build", b.Path}
 	for _, k := range b.KeyOrder {
 		args = append(args, "--build-arg", fmt.Sprintf("%s=%s", k, b.Scenario[k]))
 	}
