@@ -1,0 +1,16 @@
+multiply:
+  VERSION:
+    - 7.2
+    - 7.3
+  OS:
+    - alpine
+    - debian
+    
+append:
+  - { NAME: test }
+  
+namespace: images
+
+additional_names:
+  - docker.io/bitsbeats/image1
+  - docker.io/bitsbeats/image2
