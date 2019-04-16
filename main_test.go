@@ -4,6 +4,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"os"
 
 	"github.com/google/go-cmp/cmp"
 	log "github.com/sirupsen/logrus"
@@ -19,6 +20,9 @@ func TestBuild(t *testing.T) {
 		Command:          "echo",
 		Workdir:          "testdata",
 	}
+
+	os.Setenv("VERSION_FROM_ENV" , "7.3")
+	os.Setenv("NAME_FROM_ENV" , "test")
 
 	var got string
 	scan(c.Workdir, func(finished chan *build) {

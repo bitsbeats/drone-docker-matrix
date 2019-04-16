@@ -1,13 +1,13 @@
 multiply:
   VERSION:
     - 7.2
-    - 7.3
+    - ${VERSION_FROM_ENV}
   OS:
     - alpine
     - debian
     
 append:
-  - { NAME: test }
+  - NAME: ${NAME_FROM_ENV}
   
 namespace: images
 

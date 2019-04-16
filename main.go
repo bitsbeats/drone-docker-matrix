@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/drone/envsubst"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/segmentio/ksuid"
 	log "github.com/sirupsen/logrus"
@@ -153,6 +154,7 @@ func scan(path string, finisher func(chan *build)) {
 }
 
 func handleMatrix(name string, builds chan *build) {
+	id := ksuid.New()
 	matrixFile := filepath.Join(name, "docker-matrix.yml")
 
 	// without docker-matrix.yaml its just a normal build
@@ -163,7 +165,7 @@ func handleMatrix(name string, builds chan *build) {
 		}
 		matrixWg.Add(1)
 		b := build{
-			ID:              ksuid.New(),
+			ID:              id,
 			Namespace:       c.DefaultNamespace,
 			Name:            name,
 			Tag:             tag,
@@ -190,12 +192,19 @@ func handleMatrix(name string, builds chan *build) {
 	// multiply options
 	keyOrder := []string{}
 	scenariosMatrix := []map[string]string{map[string]string{}}
+	MATRIX:
 	for _, multiplyItem := range m.Multiply {
 		// type conversion (no matter what the yaml has, we want strings)
 		argument := fmt.Sprintf("%v", multiplyItem.Key)
 		values := []string{}
 		for _, value := range multiplyItem.Value.([]interface{}) {
-			values = append(values, fmt.Sprintf("%v", value))
+			stringValue := fmt.Sprintf("%v", value)
+			parsedValue, err := envsubst.EvalEnv(stringValue)
+			if err != nil {
+				log.Errorf("%s unable to envsubst %s -> %s: %s", id, argument, stringValue, err)
+				continue MATRIX
+			}
+			values = append(values, parsedValue)
 		}
 
 		// iterate over options and build matrix
@@ -215,6 +224,7 @@ func handleMatrix(name string, builds chan *build) {
 	}
 
 	// append options
+	ARGUMENTS:
 	for _, scenarioMatrix := range scenariosMatrix {
 		scenario := make(map[string]string)
 		for k, v := range scenarioMatrix {
@@ -223,7 +233,12 @@ func handleMatrix(name string, builds chan *build) {
 		keyOrder := append(keyOrder[:0:0], keyOrder...)
 		for _, apnd := range m.Append {
 			for k, v := range apnd {
-				scenario[k] = v
+				vParsed, err := envsubst.EvalEnv(v)
+				if err != nil {
+					log.Errorf("%s unable to envsubst %s: %s", id, v, err)
+					continue ARGUMENTS
+				}
+				scenario[k] = vParsed
 				keyOrder = append(keyOrder, k)
 			}
 		}
@@ -247,7 +262,7 @@ func handleMatrix(name string, builds chan *build) {
 		}
 		matrixWg.Add(1)
 		b := build{
-			ID:              ksuid.New(),
+			ID:              id,
 			Namespace:       namespace,
 			Name:            name,
 			Tag:             tag,
@@ -352,4 +367,3 @@ func indent(text string, prefix string) (out string) {
 	}
 	return out
 }
-

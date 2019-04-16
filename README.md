@@ -10,7 +10,9 @@ This is a Drone plugin to build a lot of Docker images.
 - `PLUGIN_DEFAULT_NAMESPACE`: Namespace to use if not specified in `docker-matrix.yml` (default: `images`).
 - `PLUGIN_BUILD_POOL_SIZE`: Number of parallel Docker builds (default: `4`).
 - `PLUGIN_UPLOAD_POOL_SIZE`: Number of parallel Docker uploads (default: `4`).
-- `PLUGIN_TAG_NAME`: Tag Name (default: `latest`).
+- `PLUGIN_TAG_NAME`: Tag Name (default: `latest**).
+
+**NOTE:**: For values in `PLUGIN_TAG_NAME` one may choose to use environment variables. Substition is handled by [drone/envsubst](https://github.com/drone/envsubst)
 
 ### Repository data
 
@@ -38,7 +40,9 @@ The `puppet` and the `python` image are build as they are. The php image will ge
 * `multiply` options will get multiplied with each other (*optional*).
 * `append` options are just added as they are (*optional*).
 * `namespace` can overwrite the `DEFAULT_NAMESPACE` variable (*optional*).
-* `additional_names` can supply additional image-names to upload to, i.e. to other registries (*optional*).
+* `additional_names` can supply additional image-names to upload to, i.e. to other registries (*optional***.
+
+**NOTE*: For values in `multiply`, `append`, and `namespace` one may choose to use environment variables. Substition is handled by [drone/envsubst](https://github.com/drone/envsubst)
 
 
 ```yaml
@@ -52,7 +56,7 @@ multiply:
     - debian
     
 append:
-  - { NAME: test }
+  - { NAME: test, LANG: ${LANG} }
   
 namespace: images
 
