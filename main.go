@@ -91,6 +91,9 @@ func main() {
 	if c.BuildPoolSize < 1 || c.UploadPoolSize < 1 {
 		log.Fatalf("PoolSize may not be smaller than 1: BuildPoolSize: %d, UploadPoolSize: %d", c.BuildPoolSize, c.UploadPoolSize)
 	}
+	if c.Registry == "" {
+		log.Fatal("Please specify a registry.")
+	}
 	log.Infof("Configuration: %+v", c)
 
 	// run
