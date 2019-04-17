@@ -25,6 +25,7 @@ type (
 		UploadPoolSize   int    `envconfig:"UPLOAD_POOL_SIZE" default:"4"`
 		TagName          string `envconfig:"TAG_NAME" default:"latest"`
 		TagBuildID       string `envconfig:"TAG_BUILD_ID"`
+		SkipUpload       bool   `envconfig:"SKIP_UPLOAD" default="false"`
 		Command          string `default:"docker"`
 		Workdir          string `default:"."`
 	}
@@ -316,6 +317,9 @@ func builder(b *build) {
 
 // upload an image
 func uploader(b *build) {
+	if c.SkipUpload {
+		return
+	}
 	err := b.upload()
 	outStr := indent(string(b.Output), "  ")
 	if err != nil {
