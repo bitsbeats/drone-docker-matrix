@@ -100,6 +100,10 @@ func main() {
 	if c.Registry == "" {
 		log.Fatal("Please specify a registry.")
 	}
+	c.TagBuildID, err = envsubst.EvalEnv(c.TagBuildID)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	log.Infof("Configuration: %+v", c)
 
 	// run
@@ -354,11 +358,10 @@ func (b *build) prettyName() string {
 // gather tags
 func (b *build) tags() (combined []string) {
 	images := append(b.AdditionalNames, fmt.Sprintf("%s/%s/%s", c.Registry, b.Namespace, b.Name))
-	buildID, _ := envsubst.EvalEnv(c.TagBuildID)
 
 	tags := []string{b.Tag}
-	if buildID != "" {
-		tags = append(tags, fmt.Sprintf("%s-%s", b.Tag, buildID))
+	if c.TagBuildID != "" {
+		tags = append(tags, fmt.Sprintf("%s-%s", b.Tag, c.TagBuildID))
 	}
 	for _, name := range images {
 		for _, tag := range tags {
