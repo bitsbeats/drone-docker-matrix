@@ -430,7 +430,7 @@ func diff() (dirs map[string]bool, err error) {
 	ref := os.Getenv("DRONE_COMMIT_REF")
 	dirs = map[string]bool{}
 
-	if strings.HasPrefix(ref, "refs/pull/"){
+	if strings.HasPrefix(ref, "refs/pull/") {
 		// pull request
 		before = "origin/master"
 	} else if before != "" {
