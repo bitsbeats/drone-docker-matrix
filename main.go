@@ -143,7 +143,14 @@ func scan(path string, finisher func(chan *build)) {
 		dir := filepath.Dir(file)
 		name := filepath.Base(dir)
 		filename := filepath.Base(file)
-		if _, found := changes[dir]; (!c.DiffOnly || found) && err == nil && filename == "Dockerfile" {
+
+		_, found := changes[dir]
+		if len(changes) == 0 {
+			log.Warn("No changes found, rebuilding all images.")
+			found = true
+		}
+
+		if (!c.DiffOnly || found) && err == nil && filename == "Dockerfile" {
 			handleMatrix(name, builds)
 		}
 		return nil
