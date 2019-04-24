@@ -307,6 +307,7 @@ ARGUMENTS:
 			Tag:             tag,
 			Scenario:        scenario,
 			AdditionalNames: m.AdditionalNames,
+			KeyOrder:        keyOrder,
 		}
 		builds <- &b
 	}
