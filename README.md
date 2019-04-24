@@ -11,7 +11,7 @@ This is a Drone plugin to build a lot of Docker images.
 - `PLUGIN_BUILD_POOL_SIZE`: Number of parallel Docker builds (default: `4`).
 - `PLUGIN_UPLOAD_POOL_SIZE`: Number of parallel Docker uploads (default: `4`).
 - `PLUGIN_TAG_NAME`: Tag Name (default: `latest`).
-- `PLUGIN_TAG_BUILD_ID`: Build id, generates `tag` and `tag-b<build_id>` for each tag; skipped if empty (default ``).
+- `PLUGIN_TAG_BUILD_ID`: Build id, generates `tag` and `tag-b<build_id>` for each tag; skipped if empty (default *empty*).
 - `PLUGIN_SKIP_UPLOAD`: Skip upload to registries, useful for testing (default `false`)
 
 **NOTE**: For values in `PLUGIN_TAG_NAME` and `PLUGIN_TAG_ID` one may choose to use environment variables. Substition is handled by [drone/envsubst](https://github.com/drone/envsubst)
