@@ -25,6 +25,7 @@ type (
 		UploadPoolSize   int    `envconfig:"UPLOAD_POOL_SIZE" default:"4"`
 		TagName          string `envconfig:"TAG_NAME" default:"latest"`
 		TagBuildID       string `envconfig:"TAG_BUILD_ID"`
+		DiffOnly         bool   `envconfig:"DIFF_ONLY" default:"true"`
 		SkipUpload       bool   `envconfig:"SKIP_UPLOAD" default="false"`
 		Command          string `default:"docker"`
 		Workdir          string `default:"."`
@@ -86,6 +87,7 @@ var (
 	uploadWg sync.WaitGroup
 )
 
+
 func main() {
 	// configuration
 	err := envconfig.Process("plugin", &c)
@@ -128,11 +130,20 @@ func scan(path string, finisher func(chan *build)) {
 		log.Fatalf("Failed to change directory to %s: %s", path, err)
 	}
 
+	var changes map[string]bool
+	if c.DiffOnly {
+		changes, err = diff()
+		if err != nil {
+			log.Fatalf("Unable to diff %s", err)
+		}
+	}
+
 	// check for files
 	err = filepath.Walk(".", func(file string, info os.FileInfo, err error) error {
-		name := filepath.Base(filepath.Dir(file))
+		dir := filepath.Dir(file)
+		name := filepath.Base(dir)
 		filename := filepath.Base(file)
-		if err == nil && filename == "Dockerfile" {
+		if _, found := changes[dir]; (!c.DiffOnly || found) && err == nil && filename == "Dockerfile" {
 			handleMatrix(name, builds)
 		}
 		return nil
@@ -394,4 +405,43 @@ func indent(text string, prefix string) (out string) {
 		out += prefix + l + "\n"
 	}
 	return out
+}
+
+// git diff
+func diff() (dirs map[string]bool, err error) {
+	before := os.Getenv("DRONE_COMMIT_BEFORE")
+	ref := os.Getenv("DRONE_COMMIT_REF")
+	dirs = map[string]bool{}
+
+	if strings.HasPrefix(ref, "refs/pull/"){
+		// pull request
+		before = "origin/master"
+	} else if before != "" {
+		// normal commit, usually ref is a sha
+		before = strings.TrimPrefix(before, "refs/")
+	} else {
+		// empty history, skipping build
+		before = "origin/master"
+	}
+
+	cmd := exec.Command("git", "diff", "--name-only", before)
+	_ = cmd.Wait()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Errorf("%+v", string(out))
+		return dirs, err
+	}
+
+	for _, file := range strings.Split(string(out), "\n") {
+		split := strings.Split(file, string(os.PathSeparator))
+		if len(split) > 0 {
+			name := split[0]
+			if _, err := os.Stat(filepath.Join(name, "Dockerfile")); err == nil {
+				dirs[name] = true
+			}
+		}
+	}
+
+	log.Infof("Diff mode enabled (%s), building following images: %v", before, dirs)
+	return dirs, nil
 }

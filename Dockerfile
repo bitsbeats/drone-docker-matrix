@@ -20,7 +20,7 @@ RUN true \
 FROM docker
 
 RUN true \
-  && apk add -U --no-cache ca-certificates
+  && apk add -U --no-cache ca-certificates git
 
 COPY --from=builder /go/src/github.com/bitsbeats/drone-docker-matrix/drone-docker-matrix /usr/local/bin/
 
