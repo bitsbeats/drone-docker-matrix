@@ -26,7 +26,7 @@ type (
 		TagName          string `envconfig:"TAG_NAME" default:"latest"`
 		TagBuildID       string `envconfig:"TAG_BUILD_ID"`
 		DiffOnly         bool   `envconfig:"DIFF_ONLY" default:"true"`
-		SkipUpload       bool   `envconfig:"SKIP_UPLOAD" default="false"`
+		SkipUpload       bool   `envconfig:"SKIP_UPLOAD" default:"false"`
 		Command          string `default:"docker"`
 		Workdir          string `default:"."`
 	}
