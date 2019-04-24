@@ -35,14 +35,14 @@ func TestBuild(t *testing.T) {
 	})
 
 	want := `build busybox -t localhost:5000/images/busybox:latest -t localhost:5000/images/busybox:7
-build python -t localhost:5000/images/python:2.7-alpine -t localhost:5000/images/python:2.7-alpine-7
-build python -t localhost:5000/images/python:2.7-stretch -t localhost:5000/images/python:2.7-stretch-7
-build python -t localhost:5000/images/python:3.6-alpine -t localhost:5000/images/python:3.6-alpine-7
-build python -t localhost:5000/images/python:3.6-stretch -t localhost:5000/images/python:3.6-stretch-7
-build php -t docker.io/bitsbeats/image1:7.2-alpine-test -t docker.io/bitsbeats/image1:7.2-alpine-test-7 -t docker.io/bitsbeats/image2:7.2-alpine-test -t docker.io/bitsbeats/image2:7.2-alpine-test-7 -t localhost:5000/images/php:7.2-alpine-test -t localhost:5000/images/php:7.2-alpine-test-7
-build php -t docker.io/bitsbeats/image1:7.2-debian-test -t docker.io/bitsbeats/image1:7.2-debian-test-7 -t docker.io/bitsbeats/image2:7.2-debian-test -t docker.io/bitsbeats/image2:7.2-debian-test-7 -t localhost:5000/images/php:7.2-debian-test -t localhost:5000/images/php:7.2-debian-test-7
-build php -t docker.io/bitsbeats/image1:7.3-alpine-test -t docker.io/bitsbeats/image1:7.3-alpine-test-7 -t docker.io/bitsbeats/image2:7.3-alpine-test -t docker.io/bitsbeats/image2:7.3-alpine-test-7 -t localhost:5000/images/php:7.3-alpine-test -t localhost:5000/images/php:7.3-alpine-test-7
-build php -t docker.io/bitsbeats/image1:7.3-debian-test -t docker.io/bitsbeats/image1:7.3-debian-test-7 -t docker.io/bitsbeats/image2:7.3-debian-test -t docker.io/bitsbeats/image2:7.3-debian-test-7 -t localhost:5000/images/php:7.3-debian-test -t localhost:5000/images/php:7.3-debian-test-7
+build php --build-arg VERSION=7.2 --build-arg OS=alpine --build-arg NAME=test -t docker.io/bitsbeats/image1:7.2-alpine-test -t docker.io/bitsbeats/image1:7.2-alpine-test-7 -t docker.io/bitsbeats/image2:7.2-alpine-test -t docker.io/bitsbeats/image2:7.2-alpine-test-7 -t localhost:5000/images/php:7.2-alpine-test -t localhost:5000/images/php:7.2-alpine-test-7
+build php --build-arg VERSION=7.2 --build-arg OS=debian --build-arg NAME=test -t docker.io/bitsbeats/image1:7.2-debian-test -t docker.io/bitsbeats/image1:7.2-debian-test-7 -t docker.io/bitsbeats/image2:7.2-debian-test -t docker.io/bitsbeats/image2:7.2-debian-test-7 -t localhost:5000/images/php:7.2-debian-test -t localhost:5000/images/php:7.2-debian-test-7
+build php --build-arg VERSION=7.3 --build-arg OS=alpine --build-arg NAME=test -t docker.io/bitsbeats/image1:7.3-alpine-test -t docker.io/bitsbeats/image1:7.3-alpine-test-7 -t docker.io/bitsbeats/image2:7.3-alpine-test -t docker.io/bitsbeats/image2:7.3-alpine-test-7 -t localhost:5000/images/php:7.3-alpine-test -t localhost:5000/images/php:7.3-alpine-test-7
+build php --build-arg VERSION=7.3 --build-arg OS=debian --build-arg NAME=test -t docker.io/bitsbeats/image1:7.3-debian-test -t docker.io/bitsbeats/image1:7.3-debian-test-7 -t docker.io/bitsbeats/image2:7.3-debian-test -t docker.io/bitsbeats/image2:7.3-debian-test-7 -t localhost:5000/images/php:7.3-debian-test -t localhost:5000/images/php:7.3-debian-test-7
+build python --build-arg VERSION=2.7 --build-arg OS=alpine -t localhost:5000/images/python:2.7-alpine -t localhost:5000/images/python:2.7-alpine-7
+build python --build-arg VERSION=2.7 --build-arg OS=stretch -t localhost:5000/images/python:2.7-stretch -t localhost:5000/images/python:2.7-stretch-7
+build python --build-arg VERSION=3.6 --build-arg OS=alpine -t localhost:5000/images/python:3.6-alpine -t localhost:5000/images/python:3.6-alpine-7
+build python --build-arg VERSION=3.6 --build-arg OS=stretch -t localhost:5000/images/python:3.6-stretch -t localhost:5000/images/python:3.6-stretch-7
 push docker.io/bitsbeats/image1:7.2-alpine-test
 push docker.io/bitsbeats/image1:7.2-alpine-test-7
 push docker.io/bitsbeats/image1:7.2-debian-test
