@@ -29,6 +29,7 @@ type (
 		SkipUpload       bool   `envconfig:"SKIP_UPLOAD" default:"false"`
 		Command          string `default:"docker"`
 		Workdir          string `default:"."`
+		Debug            bool   `envconfig:"DEBUG" default:"false"`
 	}
 
 	// Matrix that describes all arguments required to build the dockerfile.
@@ -87,7 +88,6 @@ var (
 	uploadWg sync.WaitGroup
 )
 
-
 func main() {
 	// configuration
 	err := envconfig.Process("plugin", &c)
@@ -103,6 +103,9 @@ func main() {
 	c.TagBuildID, err = envsubst.EvalEnv(c.TagBuildID)
 	if err != nil {
 		log.Fatal(err.Error())
+	}
+	if c.Debug {
+		log.SetLevel(log.DebugLevel)
 	}
 	log.Infof("Configuration: %+v", c)
 
@@ -334,6 +337,8 @@ func builder(b *build) {
 	outStr := indent(string(b.Output), "  ")
 	if err != nil {
 		log.Errorf("%s Build failed   %s, %s\n  >> Arguments: %s\n%s\n", b.ID, b.prettyName(), err, b.args(), outStr)
+	} else {
+		log.Debugf("%s Build success  %s\n  >> Arguments: %s\n%s\n", b.ID, b.prettyName(), b.args(), outStr)
 	}
 }
 
@@ -346,6 +351,8 @@ func uploader(b *build) {
 	outStr := indent(string(b.Output), "  ")
 	if err != nil {
 		log.Errorf("%s Upload failed  %s\n%s\n", b.ID, b.prettyName(), outStr)
+	} else {
+		log.Debugf("%s Upload success %s\n%s\n", b.ID, b.prettyName(), outStr)
 	}
 }
 
