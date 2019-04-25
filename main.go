@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -442,12 +443,33 @@ func diff() (dirs map[string]bool, err error) {
 		before = "origin/master"
 	}
 
+	// changes since last commit
 	cmd := exec.Command("git", "diff", "--name-only", before)
 	_ = cmd.Wait()
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Errorf("%+v", string(out))
 		return dirs, err
+	}
+
+	// working directory changes
+	_, inDrone := os.LookupEnv("DRONE")
+	if !inDrone && len(out) == 0 {
+		log.Warn("No changes found, looking for uncommited changes.")
+		cmd = exec.Command("git", "status", "-u", "--porcelain")
+		_ = cmd.Wait()
+		out2, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Errorf("%+v", string(out))
+			return dirs, err
+		}
+		for _, line := range bytes.Split(out2, []byte("\n")) {
+			if len(line) > 3 {
+				line = line[3:]
+				out = append(out, line...)
+				out = append(out, []byte("\n")...)
+			}
+		}
 	}
 
 	for _, file := range strings.Split(string(out), "\n") {
