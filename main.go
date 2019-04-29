@@ -91,6 +91,7 @@ var (
 
 func main() {
 	// configuration
+	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	err := envconfig.Process("plugin", &c)
 	if err != nil {
 		log.Fatal(err.Error())
