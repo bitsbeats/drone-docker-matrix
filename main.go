@@ -289,7 +289,12 @@ ARGUMENTS:
 			tag = "latest"
 		}
 		for _, key := range keyOrder {
-			tag = fmt.Sprintf("%s-%s", tag, scenario[key])
+			t := scenario[key]
+			if t == "" {
+				log.Debugf("%s skipping empty tag in name for %s", id, key)
+				continue
+			}
+			tag = fmt.Sprintf("%s-%s", tag, t)
 		}
 		if tag[0:1] == "-" {
 			tag = tag[1:]

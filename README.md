@@ -46,6 +46,7 @@ The `puppet` and the `python` image are build as they are. The php image will ge
 
 **NOTE**: For values in `multiply`, `append`, and `namespace` one may choose to use environment variables. Substition is handled by [drone/envsubst](https://github.com/drone/envsubst)
 
+The `multiply` can have an empty string as field. This wont be added to the images tag. Useful for default options. You can use Bash Syntax to use a default value instead: `echo ${MESSAGE}:-default`.
 
 ```yaml
 # docker-matrix.yml
@@ -56,6 +57,9 @@ multiply:
   OS:
     - alpine
     - debian
+  COMMAND:
+    - sleep 1y
+    - ""
     
 append:
   - { NAME: test, LANG: ${LANG} }
