@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	log "github.com/sirupsen/logrus"
@@ -20,10 +22,13 @@ func TestBuild(t *testing.T) {
 		TagBuildID:       "7",
 		Command:          "echo",
 		Workdir:          "testdata",
+		Time:             time.Now(),
 	}
 
 	os.Setenv("VERSION_FROM_ENV", "7.3")
 	os.Setenv("NAME_FROM_ENV", "test")
+	os.Setenv("DRONE_COMMIT_REF", "279d9035886d4c0427549863c4c2101e4a63e041")
+	os.Setenv("DRONE_REPO_LINK", "octocat/matrixed")
 
 	var got string
 	scan(c.Workdir, func(finished chan *build) {
@@ -85,9 +90,18 @@ push localhost:5000/images/python:3.6-alpine-7
 push localhost:5000/images/python:3.6-stretch
 push localhost:5000/images/python:3.6-stretch-7
 `
-	want = want [1:]
+	want = want[1:]
 
 	wantList := strings.Split(want, "\n")
+	for i, item := range wantList {
+		if strings.HasPrefix(item, "build ") {
+			wantList[i] = item +
+				" --label org.label-schema.schema-version=1.0" +
+				" --label org.label-schema.vcs-ref=279d9035886d4c0427549863c4c2101e4a63e041" +
+				" --label org.label-schema.vcs-url=octocat/matrixed" +
+				fmt.Sprintf(" --label org.label-schema.build-date=%s", c.Time.Format(time.RFC3339))
+		}
+	}
 	gotList := strings.Split(got, "\n")
 
 	sort.Strings(wantList)

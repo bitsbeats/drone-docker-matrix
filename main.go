@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/drone/envsubst"
 	"github.com/kelseyhightower/envconfig"
@@ -31,6 +32,8 @@ type (
 		Command          string `default:"docker"`
 		Workdir          string `default:"."`
 		Debug            bool   `envconfig:"DEBUG" default:"false"`
+
+		Time time.Time
 	}
 
 	// Matrix that describes all arguments required to build the dockerfile.
@@ -109,6 +112,7 @@ func main() {
 	if c.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
+	c.Time = time.Now()
 	log.Infof("Configuration: %+v", c)
 
 	// run
@@ -398,6 +402,14 @@ func (b *build) args() []string {
 	for _, tag := range b.tags() {
 		args = append(args, "-t", tag)
 	}
+
+	args = append(args,
+		"--label", fmt.Sprintf("org.label-schema.schema-version=1.0"),
+		"--label", fmt.Sprintf("org.label-schema.vcs-ref=%s", os.Getenv("DRONE_COMMIT_REF")),
+		"--label", fmt.Sprintf("org.label-schema.vcs-url=%s", os.Getenv("DRONE_REPO_LINK")),
+		"--label", fmt.Sprintf("org.label-schema.build-date=%s", c.Time.Format(time.RFC3339)),
+	)
+
 	return args
 }
 
