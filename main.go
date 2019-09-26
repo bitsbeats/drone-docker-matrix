@@ -29,6 +29,7 @@ type (
 		TagBuildID       string `envconfig:"TAG_BUILD_ID"`
 		DiffOnly         bool   `envconfig:"DIFF_ONLY" default:"true"`
 		SkipUpload       bool   `envconfig:"SKIP_UPLOAD" default:"false"`
+		Pull             bool   `envconfig:"PULL" default:"true"`
 		Command          string `default:"docker"`
 		Workdir          string `default:"."`
 		Debug            bool   `envconfig:"DEBUG" default:"false"`
@@ -401,6 +402,9 @@ func (b *build) args() []string {
 	}
 	for _, tag := range b.tags() {
 		args = append(args, "-t", tag)
+	}
+	if c.Pull {
+		args = append(args, "--pull")
 	}
 
 	args = append(args,

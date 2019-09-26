@@ -13,6 +13,7 @@ This is a Drone plugin to build a lot of Docker images.
 - `PLUGIN_TAG_NAME`: Tag Name (default: `latest`).
 - `PLUGIN_TAG_BUILD_ID`: Build id, generates `tag` and `tag-b<build_id>` for each tag; skipped if empty (default *empty*).
 - `PLUGIN_SKIP_UPLOAD`: Skip upload to registries, useful for testing (default `false`)
+- `PLUGIN_PULL`: Try to pull all docker images (default `true`)
 
 **NOTE**: For values in `PLUGIN_TAG_NAME` and `PLUGIN_TAG_ID` one may choose to use environment variables. Substition is handled by [drone/envsubst](https://github.com/drone/envsubst)
 
