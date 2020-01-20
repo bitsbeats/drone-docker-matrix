@@ -70,6 +70,9 @@ type (
 		//
 		//   additional_names: bitsbeats/drone-docker-matrix
 		AdditionalNames []string `yaml:"additional_names"`
+
+		// AsLatest contains the that that will additionaly be tagged as latest
+		AsLatest string `yaml:"as_latest"`
 	}
 
 	// Build information
@@ -83,6 +86,7 @@ type (
 		KeyOrder        []string
 		AdditionalNames []string
 		Output          []byte
+		AsLatest        string
 	}
 )
 
@@ -320,6 +324,7 @@ ARGUMENTS:
 			Scenario:        scenario,
 			AdditionalNames: m.AdditionalNames,
 			KeyOrder:        keyOrder,
+			AsLatest:        m.AsLatest,
 		}
 		builds <- &b
 	}
@@ -386,8 +391,10 @@ func (b *build) tags() (combined []string) {
 	for _, name := range images {
 		for _, tag := range tags {
 			tag = strings.TrimPrefix(tag, "latest-")
-			tag := fmt.Sprintf("%s:%s", name, tag)
-			combined = append(combined, tag)
+			if tag == b.AsLatest {
+				combined = append(combined, fmt.Sprintf("%s/latest", c.Registry))
+			}
+			combined = append(combined, fmt.Sprintf("%s:%s", name, tag))
 		}
 	}
 	return combined

@@ -44,6 +44,7 @@ The `puppet` and the `python` image are build as they are. The php image will ge
 * `append` options are just added as they are (*optional*).
 * `namespace` can overwrite the `DEFAULT_NAMESPACE` variable (*optional*).
 * `additional_names` can supply additional image-names to upload to, i.e. to other registries (*optional*).
+* `as_latest`: image with the supplied tag will be tagged as latest (*optional*).
 
 **NOTE**: For values in `multiply`, `append`, and `namespace` one may choose to use environment variables. Substition is handled by [drone/envsubst](https://github.com/drone/envsubst)
 
@@ -70,6 +71,8 @@ namespace: images
 additional_names:
   - docker.io/bitsbeats/image1
   - docker.io/bitsbeats/image2
+  
+as_latest: 7.2-debian
 ```
 
 The Dockerfile has to contain the argument names and default values. Example:
