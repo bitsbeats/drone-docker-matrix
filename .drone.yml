@@ -12,8 +12,18 @@ steps:
       password:
         from_secret: docker_password
       auto_tag: true
-      tags:
-        - latest
+    when:
+      event:
+        - tag
+
+  - name: build latest
+    image: plugins/docker
+    settings:
+      repo: bitsbeats/drone-docker-matrix
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
     when:
       event:
         - tag
