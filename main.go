@@ -392,7 +392,7 @@ func (b *build) tags() (combined []string) {
 		for _, tag := range tags {
 			tag = strings.TrimPrefix(tag, "latest-")
 			if tag == b.AsLatest {
-				combined = append(combined, fmt.Sprintf("%s/latest", c.Registry))
+				combined = append(combined, fmt.Sprintf("%s/%s/%s:latest", c.Registry, b.Namespace, b.Name))
 			}
 			combined = append(combined, fmt.Sprintf("%s:%s", name, tag))
 		}
