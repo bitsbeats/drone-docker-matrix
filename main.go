@@ -28,6 +28,7 @@ type (
 		TagName          string `envconfig:"TAG_NAME" default:"latest"`
 		TagBuildID       string `envconfig:"TAG_BUILD_ID"`
 		DiffOnly         bool   `envconfig:"DIFF_ONLY" default:"true"`
+		Dronetrigger     bool   `envconfig:"DRONETRIGGER" default:"false"`
 		SkipUpload       bool   `envconfig:"SKIP_UPLOAD" default:"false"`
 		Pull             bool   `envconfig:"PULL" default:"true"`
 		Command          string `default:"docker"`
@@ -148,8 +149,8 @@ func scan(path string, finisher func(chan *build)) {
 		log.Fatalf("Failed to change directory to %s: %s", path, err)
 	}
 
-	var changes map[string]bool
-	if c.DiffOnly {
+	changes := map[string]bool{}
+	if !c.Dronetrigger && c.DiffOnly {
 		changes, err = diff()
 		if err != nil {
 			log.Fatalf("Unable to diff %s", err)
