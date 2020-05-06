@@ -406,6 +406,10 @@ func (b *build) args() []string {
 	log.Warnf("%s Building       %s", b.ID, b.prettyName())
 	args := []string{"build", b.Path}
 	for _, k := range b.KeyOrder {
+		if b.Scenario[k] == "" {
+			log.Infof("skipping empty build arg %s", k)
+			continue
+		}
 		args = append(args, "--build-arg", fmt.Sprintf("%s=%s", k, b.Scenario[k]))
 	}
 	for _, tag := range b.tags() {

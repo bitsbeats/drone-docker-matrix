@@ -41,7 +41,7 @@ func TestBuild(t *testing.T) {
 
 	want := `
 build alpine --build-arg MESSAGE=multiply -t localhost:5000/images/alpine:multiply -t localhost:5000/images/alpine:multiply-7
-build alpine --build-arg MESSAGE= -t localhost:5000/images/alpine:latest -t localhost:5000/images/alpine:7
+build alpine -t localhost:5000/images/alpine:latest -t localhost:5000/images/alpine:7
 build busybox -t localhost:5000/images/busybox:latest -t localhost:5000/images/busybox:7
 build php --build-arg VERSION=7.2 --build-arg OS=alpine --build-arg NAME=test -t docker.io/bitsbeats/image1:7.2-alpine-test -t docker.io/bitsbeats/image1:7.2-alpine-test-7 -t docker.io/bitsbeats/image2:7.2-alpine-test -t docker.io/bitsbeats/image2:7.2-alpine-test-7 -t localhost:5000/images/php:7.2-alpine-test -t localhost:5000/images/php:7.2-alpine-test-7
 build php --build-arg VERSION=7.2 --build-arg OS=debian --build-arg NAME=test -t docker.io/bitsbeats/image1:7.2-debian-test -t docker.io/bitsbeats/image1:7.2-debian-test-7 -t docker.io/bitsbeats/image2:7.2-debian-test -t docker.io/bitsbeats/image2:7.2-debian-test-7 -t localhost:5000/images/php:7.2-debian-test -t localhost:5000/images/php:7.2-debian-test-7
