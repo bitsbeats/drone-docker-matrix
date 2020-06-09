@@ -1,0 +1,2 @@
+custom_path: https://github.com/openshift/origin-aggregated-logging.git#release-3.11:fluentd
+custom_dockerfile: Dockerfile.centos7

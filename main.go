@@ -74,14 +74,22 @@ type (
 
 		// AsLatest contains the that that will additionaly be tagged as latest
 		AsLatest string `yaml:"as_latest"`
+
+		// CustomPath allowes to overwrite the path of the docker context
+		CustomPath string `yaml:"custom_path"`
+
+		// Dockerfile alles to specify a custom Dockerfile
+		CustomDockerfile string `yaml:"custom_dockerfile" default:"Dockerfile"`
 	}
 
 	// Build information
 	build struct {
-		ID              ksuid.KSUID
-		Namespace       string
-		Name            string
+		ID        ksuid.KSUID
+		Namespace string
+		Name      string
+
 		Path            string
+		Dockerfile      string
 		Tag             string
 		Scenario        map[string]string
 		KeyOrder        []string
@@ -218,6 +226,7 @@ func handleMatrix(name string, builds chan *build) {
 			Namespace:       c.DefaultNamespace,
 			Name:            name,
 			Path:            path,
+			Dockerfile:      "Dockerfile",
 			Tag:             tag,
 			Scenario:        make(map[string]string),
 			AdditionalNames: []string{},
@@ -237,6 +246,9 @@ func handleMatrix(name string, builds chan *build) {
 	if err != nil {
 		log.Errorf("%s unable to parse '%s': %s", id, matrixFile, err)
 		return
+	}
+	if m.CustomPath != "" {
+		path = m.CustomPath
 	}
 
 	// multiply options
@@ -326,6 +338,7 @@ ARGUMENTS:
 			AdditionalNames: m.AdditionalNames,
 			KeyOrder:        keyOrder,
 			AsLatest:        m.AsLatest,
+			Dockerfile:      m.CustomDockerfile,
 		}
 		builds <- &b
 	}
@@ -403,8 +416,11 @@ func (b *build) tags() (combined []string) {
 
 // build command argument
 func (b *build) args() []string {
-	log.Warnf("%s Building       %s", b.ID, b.prettyName())
-	args := []string{"build", b.Path}
+	if b.Dockerfile == "" {
+		b.Dockerfile = "Dockerfile"
+	}
+	log.Warnf("%s Building       %s from %s/%s", b.ID, b.prettyName(), b.Path, b.Dockerfile)
+	args := []string{"build", b.Path, "-f", b.Dockerfile}
 	for _, k := range b.KeyOrder {
 		if b.Scenario[k] == "" {
 			log.Infof("skipping empty build arg %s", k)

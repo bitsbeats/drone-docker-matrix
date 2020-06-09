@@ -62,16 +62,16 @@ multiply:
   COMMAND:
     - sleep 1y
     - ""
-    
+
 append:
   - { NAME: test, LANG: ${LANG} }
-  
+
 namespace: images
 
 additional_names:
   - docker.io/bitsbeats/image1
   - docker.io/bitsbeats/image2
-  
+
 as_latest: 7.2-debian
 ```
 
@@ -82,11 +82,30 @@ ARG \
   VERSION=7.3 \
   OS=debian \
   NAME=test
-  
+
 FROM php:$VERSION-fpm-$OS
 
 RUN touch $NAME
 ```
+
+### Building external repositories
+
+It's possible to build Dockerfiles from an external repository. The path to the
+repository is specified just like for the `docker build` cli command. The syntax
+is described [here](https://docs.docker.com/engine/reference/commandline/build/#git-repositories).
+
+* `custom_path`: use a specific path to build (*optional*)
+* `custom_dockerfile`: use a specific dockerfile (*optional*, default: `Dockerfile`)
+
+```yaml
+# docker-matrix.yml
+custom_path: https://github.com/openshift/origin-aggregated-logging.git#release-3.11:fluentd
+custom_dockerfile: Dockerfile.centos7
+```
+
+**Note**: Currently its still required that a Dockerfile exists next to the
+`drone-matrix.yml`, since we use Dockerfiles to discover. The file can be empty
+or just a comment.
 
 ### Running without Drone
 
