@@ -220,13 +220,14 @@ func handleMatrix(name string, builds chan *build) {
 		if tag == "" {
 			tag = "latest"
 		}
+		dockerfile := filepath.Join(path, "Dockerfile")
 		matrixWg.Add(1)
 		b := build{
 			ID:              id,
 			Namespace:       c.DefaultNamespace,
 			Name:            name,
 			Path:            path,
-			Dockerfile:      "Dockerfile",
+			Dockerfile:      dockerfile,
 			Tag:             tag,
 			Scenario:        make(map[string]string),
 			AdditionalNames: []string{},
@@ -249,6 +250,14 @@ func handleMatrix(name string, builds chan *build) {
 	}
 	if m.CustomPath != "" {
 		path = m.CustomPath
+	}
+
+	// add directory to dockerfiles
+	if m.CustomDockerfile == "" {
+		m.CustomDockerfile = "Dockerfile"
+	}
+	if !strings.Contains(path, "://") {
+		m.CustomDockerfile = filepath.Join(path, m.CustomDockerfile)
 	}
 
 	// multiply options
@@ -416,11 +425,11 @@ func (b *build) tags() (combined []string) {
 
 // build command argument
 func (b *build) args() []string {
-	if b.Dockerfile == "" {
-		b.Dockerfile = "Dockerfile"
+	log.Warnf("%s Building       %s from %s dockerfile:%s", b.ID, b.prettyName(), b.Path, b.Dockerfile)
+	args := []string{"build", b.Path}
+	if b.Dockerfile != "" {
+		args = append(args, "-f", b.Dockerfile)
 	}
-	log.Warnf("%s Building       %s from %s/%s", b.ID, b.prettyName(), b.Path, b.Dockerfile)
-	args := []string{"build", b.Path, "-f", b.Dockerfile}
 	for _, k := range b.KeyOrder {
 		if b.Scenario[k] == "" {
 			log.Infof("skipping empty build arg %s", k)

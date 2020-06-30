@@ -2,9 +2,10 @@ multiply:
   VERSION:
     - 2.7
     - 3.6
-  
+
   OS:
     - alpine
     - stretch
 
 as_latest: 3.6-alpine
+custom_dockerfile: Dockerfile
