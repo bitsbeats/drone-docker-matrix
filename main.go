@@ -161,7 +161,7 @@ func scan(path string, finisher func(chan *build)) {
 	if !c.Dronetrigger && c.DiffOnly {
 		changes, err = diff()
 		if err != nil {
-			log.Fatalf("Unable to diff %s", err)
+			log.Fatalf("unable to diff to generate diff: %s", err)
 		}
 	}
 
@@ -499,7 +499,7 @@ func diff() (dirs map[string]bool, err error) {
 		before = strings.TrimPrefix(before, "refs/")
 	} else {
 		// empty history, skipping build
-		before = "origin/master"
+		return nil, fmt.Errorf("unable to fetch previos commit from DRONE_COMMIT_REF")
 	}
 
 	// changes since last commit
@@ -507,8 +507,7 @@ func diff() (dirs map[string]bool, err error) {
 	_ = cmd.Wait()
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Errorf("%+v", string(out))
-		return dirs, err
+		return nil, err
 	}
 
 	// working directory changes
@@ -519,8 +518,7 @@ func diff() (dirs map[string]bool, err error) {
 		_ = cmd.Wait()
 		out2, err := cmd.CombinedOutput()
 		if err != nil {
-			log.Errorf("%+v", string(out))
-			return dirs, err
+			return nil, err
 		}
 		for _, line := range bytes.Split(out2, []byte("\n")) {
 			if len(line) > 3 {
