@@ -138,6 +138,7 @@ func main() {
 	})
 }
 
+/// scan walks a path and builds the dockerimages
 func scan(path string, finisher func(chan *build)) {
 	// spawn build and upload pool
 	builds := make(chan *build, 128)
@@ -201,6 +202,8 @@ func scan(path string, finisher func(chan *build)) {
 	}
 }
 
+// handleMatrix extracts a matrixfile in `name` to a `*build` and ejects all
+// created variants into the `builds` channel
 func handleMatrix(name string, builds chan *build) {
 	id := ksuid.New()
 	matrixFile := filepath.Join(name, "docker-matrix.yml")
@@ -353,7 +356,8 @@ ARGUMENTS:
 	}
 }
 
-// pool for paralell builds
+// pool is a wrapper that allows to process a chain in a pool. It consumes all
+// *build from `builds` into `callback`. Each calls `handler` and decremnts `wg`
 func pool(size int, builds chan *build, callback chan *build, wg *sync.WaitGroup, handler func(*build)) {
 	p := make(chan bool, size)
 	for i := 0; i < size; i++ {
