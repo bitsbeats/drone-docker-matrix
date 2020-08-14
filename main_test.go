@@ -31,13 +31,15 @@ func TestBuild(t *testing.T) {
 	os.Setenv("DRONE_REPO_LINK", "octocat/matrixed")
 
 	var got string
-	scan(c.Workdir, func(finished chan *build) {
-		for b := range finished {
+	b := NewBuilder(
+		builder,
+		uploader,
+		func(b *Build) {
 			got += string(b.Output)
-			log.Infof("%s Done           %s", b.ID, b.prettyName())
-			matrixWg.Done()
-		}
-	})
+			log.Infof("Done           %s", b.prettyName())
+		},
+	)
+	b.Run(c.Workdir)
 
 	want := `
 build alpine -f alpine/Dockerfile --build-arg MESSAGE=multiply -t localhost:5000/images/alpine:multiply -t localhost:5000/images/alpine:multiply-7
