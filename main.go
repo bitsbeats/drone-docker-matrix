@@ -17,20 +17,42 @@ import (
 type (
 	// Configuration
 	config struct {
-		Registry         string `envconfig:"REGISTRY"`
-		DefaultNamespace string `envconfig:"DEFAULT_NAMESPACE" default:"images"`
-		BuildPoolSize    int    `envconfig:"BUILD_POOL_SIZE" default:"4"`
-		UploadPoolSize   int    `envconfig:"UPLOAD_POOL_SIZE" default:"4"`
-		TagName          string `envconfig:"TAG_NAME" default:"latest"`
-		TagBuildID       string `envconfig:"TAG_BUILD_ID"`
-		DiffOnly         bool   `envconfig:"DIFF_ONLY" default:"true"`
-		Dronetrigger     bool   `envconfig:"DRONETRIGGER" default:"false"`
-		SkipUpload       bool   `envconfig:"SKIP_UPLOAD" default:"false"`
-		Pull             bool   `envconfig:"PULL" default:"true"`
-		Command          string `default:"docker"`
-		Workdir          string `envconfig:"WORKDIR" default:"."`
-		Debug            bool   `envconfig:"DEBUG" default:"false"`
+		// Registry is the registry to upload the images to
+		Registry string `envconfig:"REGISTRY"`
+		// PushGateway is the URL to Prometheus Pushgateway for metrics
+		PushGateway string `envconfig:"PUSHGATEWAY`
 
+		BuildPoolSize  int `envconfig:"BUILD_POOL_SIZE" default:"4"`
+		UploadPoolSize int `envconfig:"UPLOAD_POOL_SIZE" default:"4"`
+
+		// DefaultNamespace is the Namespace to use if not specified in
+		// `docker-matrix.yml` (default: `images`)
+		DefaultNamespace string `envconfig:"DEFAULT_NAMESPACE" default:"images"`
+		// TagName is the default tag name
+		TagName string `envconfig:"TAG_NAME" default:"latest"`
+		// TagBuildID generates an additional tag `tagname-b<ID>` for
+		// each tag, skipped if empty
+		TagBuildID string `envconfig:"TAG_BUILD_ID"`
+		// SkipUpload skips the upload to registry, useful for testing
+		SkipUpload bool `envconfig:"SKIP_UPLOAD" default:"false"`
+		// Pull trues to pull all docker images
+		Pull bool `envconfig:"PULL" default:"true"`
+
+		// Workdir changes the working directory before calculating the
+		// matrix
+		Workdir string `envconfig:"WORKDIR" default:"."`
+		// DiffOnly builds only changes, if no change is detected
+		// nothing will be build
+		DiffOnly bool `envconfig:"DIFF_ONLY" default:"true"`
+		// Dronetigger builds all images, regardless of other options
+		Dronetrigger bool `envconfig:"DRONETRIGGER" default:"false"`
+		// Command is the command to build dockerimages with
+		Command string `default:"docker"`
+		// Debug enables debuglogging
+		Debug bool `envconfig:"DEBUG" default:"false"`
+
+		// Time is set during startup and is used as Label on the
+		// indiviual images
 		Time time.Time
 	}
 
