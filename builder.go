@@ -10,14 +10,14 @@ import (
 )
 
 type (
-	BuildHandler func(*Build) error
+	BuildHandler func(*Build)
 
 	// Builder starts up a worker for each step and builds the images
 	Builder struct {
-		parse   *Parser
-		build   *Worker
-		upload  *Worker
-		finish  *Finisher
+		parse  *Parser
+		build  *Worker
+		upload *Worker
+		finish *Finisher
 	}
 )
 
@@ -51,10 +51,10 @@ func NewBuilder(builder, uploader, finisher BuildHandler) *Builder {
 	}
 
 	return &Builder{
-		parse:   parse,
-		build:   build,
-		upload:  upload,
-		finish:  finish,
+		parse:  parse,
+		build:  build,
+		upload: upload,
+		finish: finish,
 	}
 }
 
