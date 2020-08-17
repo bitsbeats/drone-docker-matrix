@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"net/http"
 	"os"
 	"sort"
 	"strings"
@@ -22,6 +24,7 @@ func TestBuild(t *testing.T) {
 		TagBuildID:       "7",
 		Command:          "echo",
 		Workdir:          "testdata",
+		PushGateway:      "http://vm277.netzmarkt.lan:27121/metrics",
 		Time:             time.Now(),
 	}
 
@@ -37,9 +40,26 @@ func TestBuild(t *testing.T) {
 		func(b *Build) {
 			got += string(b.Output)
 			log.Infof("Done           %s", b.prettyName())
+
+			// notify pushgateway if set
+			if c.PushGateway != "" {
+				buffer := bytes.NewBuffer([]byte("# TYPE drone_docker_matrix gauge\n"))
+				for _, tag := range b.tags() {
+					fmt.Fprintf(buffer, "drone_docker_matrix{tag=%q} %d\n", tag, c.Time.Unix())
+				}
+				url := fmt.Sprintf(
+					"%s/job/drone-docker-matrix/image/%s",
+					c.PushGateway,
+					b.Name,
+				)
+				_, _ = http.Post(url, "text", bytes.NewReader(buffer.Bytes()))
+			}
 		},
 	)
-	b.Run(c.Workdir)
+	err := b.Run(c.Workdir)
+	if err != nil {
+		t.Fatalf("failed to run: %s", err)
+	}
 
 	want := `
 build alpine -f alpine/Dockerfile --build-arg MESSAGE=multiply -t localhost:5000/images/alpine:multiply -t localhost:5000/images/alpine:multiply-7

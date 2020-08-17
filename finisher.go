@@ -15,9 +15,7 @@ type (
 func (f *Finisher) Handle() {
 	defer f.wg.Done()
 	for b := range f.input {
-		f.wg.Add(1)
 		f.handler(b)
-		defer f.wg.Done()
 	}
 }
 func (f *Finisher) Wait() {

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"net/http"
+
 	"github.com/drone/envsubst"
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
@@ -106,17 +107,17 @@ func main() {
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	err := envconfig.Process("plugin", &c)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatalf("unable to parse environment: %s", err)
 	}
 	if c.BuildPoolSize < 1 || c.UploadPoolSize < 1 {
 		log.Fatalf("PoolSize may not be smaller than 1: BuildPoolSize: %d, UploadPoolSize: %d", c.BuildPoolSize, c.UploadPoolSize)
 	}
 	if c.Registry == "" {
-		log.Fatal("Please specify a registry.")
+		log.Fatalf("Please specify a registry.")
 	}
 	c.TagBuildID, err = envsubst.EvalEnv(c.TagBuildID)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 	if c.Debug {
 		log.SetLevel(log.DebugLevel)
@@ -130,7 +131,10 @@ func main() {
 		uploader,
 		finisher,
 	)
-	b.Run(c.Workdir)
+	err = b.Run(c.Workdir)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // build an image
@@ -142,7 +146,6 @@ func builder(b *Build) {
 		return
 	}
 	log.Debugf("Build success  %s\n  >> Arguments: %s\n%s\n", b.prettyName(), b.args(), outStr)
-	return
 }
 
 // upload an image
