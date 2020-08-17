@@ -101,8 +101,13 @@ func (b *Builder) Run(path string) error {
 		if filename != "Dockerfile" {
 			return nil
 		}
+
+		// build if one of these match
+		// * changed (per folder)
+		// * run by dronetrigger (rebuilds all)
+		// * no no changes found and diffonly is not set (rebuilds all)
 		_, found := changes[dir]
-		if noChanges && !c.DiffOnly {
+		if c.Dronetrigger || (noChanges && !c.DiffOnly) {
 			found = true
 		}
 		if found {
