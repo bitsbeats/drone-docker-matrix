@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"fmt"
 	"time"
 
+	"net/http"
 	"github.com/drone/envsubst"
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
@@ -14,6 +17,8 @@ type (
 	config struct {
 		// Registry is the registry to upload the images to
 		Registry string `envconfig:"REGISTRY"`
+		// PushGateway is the URL to Prometheus Pushgateway for metrics
+		PushGateway string `envconfig:"PUSHGATEWAY" default:""`
 
 		BuildPoolSize  int `envconfig:"BUILD_POOL_SIZE" default:"4"`
 		UploadPoolSize int `envconfig:"UPLOAD_POOL_SIZE" default:"4"`
@@ -157,4 +162,19 @@ func uploader(b *Build) {
 // finisher is called after an image is uploaded
 func finisher(b *Build) {
 	log.Infof("Done           %s", b.prettyName())
+
+	// notify pushgateway if set
+	if c.PushGateway != "" {
+		buffer := bytes.NewBuffer([]byte("# TYPE drone_docker_matrix gauge\n"))
+		for _, tag := range b.tags() {
+			fmt.Fprintf(buffer, "drone_docker_matrix{tag=%q} %d\n", tag, c.Time.Unix())
+		}
+		url := fmt.Sprintf(
+			"%s/job/drone-docker-matrix/image/%s",
+			c.PushGateway,
+			b.Name,
+		)
+		_, _ = http.Post(url, "text", bytes.NewReader(buffer.Bytes()))
+	}
 }
+
