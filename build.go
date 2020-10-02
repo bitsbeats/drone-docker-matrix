@@ -26,6 +26,8 @@ type (
 		AdditionalNames []string
 		Output          []byte
 		AsLatest        string
+
+		Error error
 	}
 )
 

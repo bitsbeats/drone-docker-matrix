@@ -142,6 +142,7 @@ func builder(b *Build) {
 	err := b.build()
 	outStr := indent(string(b.Output), "  ")
 	if err != nil {
+		b.Error = err
 		log.Errorf("Build failed   %s, %s\n  >> Arguments: %s\n%s\n", b.prettyName(), err, b.args(), outStr)
 		return
 	}
@@ -150,12 +151,18 @@ func builder(b *Build) {
 
 // upload an image
 func uploader(b *Build) {
+	// skip all uploads even if only asingle build failes
+	if b.Error != nil {
+		return
+	}
+
 	if c.SkipUpload {
 		return
 	}
 	err := b.upload()
 	outStr := indent(string(b.Output), "  ")
 	if err != nil {
+		b.Error = err
 		log.Errorf("Upload failed  %s\n%s\n", b.prettyName(), outStr)
 		return
 	}
@@ -168,6 +175,11 @@ func finisher(b *Build) {
 
 	// notify pushgateway if set
 	if c.PushGateway != "" {
+		// skip update if any of the tags failed
+		if b.Error != nil {
+			return
+		}
+
 		buffer := bytes.NewBuffer([]byte("# TYPE drone_docker_matrix gauge\n"))
 		for _, tag := range b.tags() {
 			fmt.Fprintf(buffer, "drone_docker_matrix{tag=%q} %d\n", tag, c.Time.Unix())
@@ -180,4 +192,3 @@ func finisher(b *Build) {
 		_, _ = http.Post(url, "text", bytes.NewReader(buffer.Bytes()))
 	}
 }
-
