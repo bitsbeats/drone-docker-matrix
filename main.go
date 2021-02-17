@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"os/exec"
 	"time"
 
 	"net/http"
@@ -124,6 +126,14 @@ func main() {
 	}
 	c.Time = time.Now()
 	log.Infof("Configuration: %+v", c)
+
+	// log info
+	sysinfo := exec.Command(c.Command, "system", "info")
+	sysinfo.Stdout = os.Stdout
+	err = sysinfo.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// run
 	b := NewBuilder(
