@@ -8,10 +8,9 @@ WORKDIR /go/src/github.com/bitsbeats/drone-docker-matrix
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 
-RUN true \
-  && go test -mod=vendor ./... \
-  && go build -mod=vendor . \
-  && strip drone-docker-matrix
+RUN go test -mod=vendor ./...
+RUN go build -mod=vendor .
+RUN strip drone-docker-matrix
 
 # ---
 
