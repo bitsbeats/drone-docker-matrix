@@ -37,7 +37,7 @@ func TestBuild(t *testing.T) {
 	b := NewBuilder(
 		builder,
 		uploader,
-		func(b *Build) {
+		func(b *DockerBuild) {
 			got += string(b.Output)
 			log.Infof("Done           %s", b.prettyName())
 
@@ -132,6 +132,27 @@ push localhost:5000/images/remote:latest
 
 	sort.Strings(wantList)
 	sort.Strings(gotList)
+
+	fa, err := os.Create("/tmp/a")
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+	defer fa.Close()
+	fb, err := os.Create("/tmp/b")
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+	defer fb.Close()
+	for _, str := range wantList {
+		_, err = fmt.Fprintln(fa, str)
+		if err != nil {
+			log.Fatalf("error: %s", err)
+		}
+
+	}
+	for _, str := range gotList {
+		fmt.Fprintln(fb, str)
+	}
 
 	if diff := cmp.Diff(wantList, gotList); diff != "" {
 		t.Errorf("Command mismatch (want, got):\n%s", diff)

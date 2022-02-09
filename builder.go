@@ -10,7 +10,7 @@ import (
 )
 
 type (
-	BuildHandler func(*Build)
+	BuildHandler func(*DockerBuild)
 
 	// Builder starts up a worker for each step and builds the images
 	Builder struct {
@@ -22,9 +22,9 @@ type (
 )
 
 func NewBuilder(builder, uploader, finisher BuildHandler) *Builder {
-	inputc := make(chan *Build, 128)
-	uploadc := make(chan *Build, 128)
-	finishc := make(chan *Build, 128)
+	inputc := make(chan *DockerBuild, 128)
+	uploadc := make(chan *DockerBuild, 128)
+	finishc := make(chan *DockerBuild, 128)
 
 	parse := &Parser{
 		wg:     &sync.WaitGroup{},

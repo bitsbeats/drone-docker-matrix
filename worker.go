@@ -8,8 +8,8 @@ type (
 	Worker struct {
 		name    string
 		wg      *sync.WaitGroup
-		input   <-chan *Build
-		output  chan<- *Build
+		input   <-chan *DockerBuild
+		output  chan<- *DockerBuild
 		handler BuildHandler
 	}
 )
@@ -27,7 +27,7 @@ func (w *Worker) pool(size int) {
 	for b := range w.input {
 		w.wg.Add(1)
 		lock := <-p
-		go func(build *Build, lock bool) {
+		go func(build *DockerBuild, lock bool) {
 			defer w.wg.Done()
 			w.handler(build)
 			p <- lock

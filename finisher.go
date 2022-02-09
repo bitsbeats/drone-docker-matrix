@@ -7,7 +7,7 @@ import (
 type (
 	Finisher struct {
 		wg      *sync.WaitGroup
-		input   <-chan *Build
+		input   <-chan *DockerBuild
 		handler BuildHandler
 	}
 )

@@ -1,0 +1,4 @@
+append:
+  - { FOR: aws, VERSION: v1.0.0 }
+  - { FOR: aws, VERSION: v1.1.0 }
+  - { FOR: gcp, VERSION: v1.0.0 }
