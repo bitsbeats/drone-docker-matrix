@@ -74,6 +74,9 @@ build python -f python/Dockerfile --build-arg VERSION=2.7 --build-arg OS=alpine 
 build python -f python/Dockerfile --build-arg VERSION=2.7 --build-arg OS=stretch -t localhost:5000/images/python:2.7-stretch -t localhost:5000/images/python:2.7-stretch-7
 build python -f python/Dockerfile --build-arg VERSION=3.6 --build-arg OS=alpine -t localhost:5000/images/python:latest -t localhost:5000/images/python:3.6-alpine -t localhost:5000/images/python:3.6-alpine-7
 build python -f python/Dockerfile --build-arg VERSION=3.6 --build-arg OS=stretch -t localhost:5000/images/python:3.6-stretch -t localhost:5000/images/python:3.6-stretch-7
+build velero -f velero/Dockerfile --build-arg FOR=aws --build-arg VERSION=v1.0.0 -t localhost:5000/images/velero:aws-v1.0.0 -t localhost:5000/images/velero:aws-v1.0.0-7
+build velero -f velero/Dockerfile --build-arg FOR=aws --build-arg VERSION=v1.1.0 -t localhost:5000/images/velero:aws-v1.1.0 -t localhost:5000/images/velero:aws-v1.1.0-7
+build velero -f velero/Dockerfile --build-arg FOR=gcp --build-arg VERSION=v1.0.0 -t localhost:5000/images/velero:gcp-v1.0.0 -t localhost:5000/images/velero:gcp-v1.0.0-7
 push docker.io/bitsbeats/image1:7.2-alpine-test
 push docker.io/bitsbeats/image1:7.2-alpine-test-7
 push docker.io/bitsbeats/image1:7.2-debian-test
@@ -115,6 +118,12 @@ push localhost:5000/images/python:3.6-stretch-7
 push localhost:5000/images/python:latest
 push localhost:5000/images/remote:7
 push localhost:5000/images/remote:latest
+push localhost:5000/images/velero:aws-v1.0.0
+push localhost:5000/images/velero:aws-v1.0.0-7
+push localhost:5000/images/velero:aws-v1.1.0
+push localhost:5000/images/velero:aws-v1.1.0-7
+push localhost:5000/images/velero:gcp-v1.0.0
+push localhost:5000/images/velero:gcp-v1.0.0-7
 `
 	want = want[1:]
 
