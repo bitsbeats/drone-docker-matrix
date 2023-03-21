@@ -50,7 +50,7 @@ type (
 		// CustomPath allowes to overwrite the path of the docker context
 		CustomPath string `yaml:"custom_path"`
 
-		// Dockerfile alles to specify a custom Dockerfile
+		// CustomDockerfile allowes to specify a custom Dockerfile
 		CustomDockerfile string `yaml:"custom_dockerfile" default:"Dockerfile"`
 	}
 )
