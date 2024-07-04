@@ -1,14 +1,17 @@
 multiply:
   VERSION:
-    - 7.2
+    - "7.2"
     - ${VERSION_FROM_ENV}
   OS:
     - alpine
     - debian
-    
+
 append:
   - NAME: ${NAME_FROM_ENV}
-  
+
+custom_builds:
+  - { VERSION: "8.3", OS: centos, NAME: four}
+
 namespace: images
 
 additional_names:

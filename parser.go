@@ -136,6 +136,11 @@ func (p *Parser) matrixBuild(b *DockerBuild, matrixFile string) error {
 		builds = newBuilds
 	}
 
+	// add custom build
+	for _, customBuild := range m.CustomBuilds {
+		builds = append(builds, handleCustom(b, &m, froms, namespace, customBuild))
+	}
+
 	// schedule building
 	for _, build := range builds {
 		if build.Tag == "" {
@@ -184,7 +189,7 @@ func handleAppend(builds []*DockerBuild, arguments yaml.MapSlice) []*DockerBuild
 	appended := []*DockerBuild{}
 	for _, build := range builds {
 		for _, argument := range arguments {
-                        argName := argument.Key.(string)
+			argName := argument.Key.(string)
 			argValue := argument.Value.(string)
 			substed, err := envsubst.EvalEnv(argValue)
 			if err == nil {
@@ -197,4 +202,33 @@ func handleAppend(builds []*DockerBuild, arguments yaml.MapSlice) []*DockerBuild
 		appended = append(appended, build)
 	}
 	return appended
+}
+
+func handleCustom(base *DockerBuild, matrix *Matrix, froms []string, namespace string, customBuild yaml.MapSlice) *DockerBuild {
+	args := map[string]string{}
+	argOrder := []string{}
+	tag := base.Tag
+	for _, arg := range customBuild {
+		key := arg.Key.(string)
+		value := arg.Value.(string)
+		argOrder = append(argOrder, key)
+		args[key] = value
+		tag = fmt.Sprintf("%s-%s", tag, value)
+	}
+	tag = strings.TrimPrefix(tag, "-")
+	return &DockerBuild{
+		ID:        base.ID,
+		Namespace: namespace,
+		Name:      base.Name,
+		Path:      base.Path,
+		Tag:       tag,
+
+		Arguments:     args,
+		ArgumentOrder: argOrder,
+
+		AdditionalNames: matrix.AdditionalNames,
+		AsLatest:        matrix.AsLatest,
+		Dockerfile:      matrix.CustomDockerfile,
+		Froms:           froms,
+	}
 }

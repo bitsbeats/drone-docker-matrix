@@ -44,6 +44,9 @@ type (
 		//   additional_names: bitsbeats/drone-docker-matrix
 		AdditionalNames []string `yaml:"additional_names"`
 
+		// CustomBuilds is a list of builds that get appended
+		CustomBuilds []yaml.MapSlice `yaml:"custom_builds"`
+
 		// AsLatest contains the that that will additionaly be tagged as latest
 		AsLatest string `yaml:"as_latest"`
 

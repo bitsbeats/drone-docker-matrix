@@ -158,4 +158,3 @@ func finisher(b *DockerBuild) {
 		_, _ = http.Post(url, "text", bytes.NewReader(buffer.Bytes()))
 	}
 }
-
