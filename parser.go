@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -151,7 +150,7 @@ func (p *Parser) matrixBuild(b *DockerBuild, matrixFile string) error {
 }
 
 func loadMatrix(file string, b *DockerBuild, m *Matrix) error {
-	fileContent, err := ioutil.ReadFile(file)
+	fileContent, err := os.ReadFile(file)
 	if err != nil {
 		return fmt.Errorf("%s failed to load %s", b.ID, file)
 	}
