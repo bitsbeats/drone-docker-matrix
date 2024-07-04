@@ -181,10 +181,12 @@ func handleMultiply(builds []*DockerBuild, argName string, argValues []string) [
 	return multiplied
 }
 
-func handleAppend(builds []*DockerBuild, arguments map[string]string) []*DockerBuild {
+func handleAppend(builds []*DockerBuild, arguments yaml.MapSlice) []*DockerBuild {
 	appended := []*DockerBuild{}
 	for _, build := range builds {
-		for argName, argValue := range arguments {
+		for _, argument := range arguments {
+                        argName := argument.Key.(string)
+			argValue := argument.Value.(string)
 			substed, err := envsubst.EvalEnv(argValue)
 			if err == nil {
 				argValue = substed

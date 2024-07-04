@@ -34,7 +34,7 @@ type (
 		//
 		//   append:
 		//     - { PATH: /var/www, DIR: html }
-		Append []map[string]string `yaml:"append"`
+		Append []yaml.MapSlice `yaml:"append"`
 
 		// Namespace: namespace for the image
 		Namespace string `yaml:"namespace"`
