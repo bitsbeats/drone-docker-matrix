@@ -41,7 +41,8 @@ The `puppet` and the `python` image are build as they are. The php image will ge
 ### Matrixfile
 
 * `multiply` options will get multiplied with each other (*optional*).
-* `append` options are just added as they are (*optional*).
+* `append` options are just added to all multiplied builds (*optional*).
+* `custom_builds`: these are additional builds, you need to specify all options in here (*optional*)
 * `namespace` can overwrite the `DEFAULT_NAMESPACE` variable (*optional*).
 * `additional_names` can supply additional image-names to upload to, i.e. to other registries (*optional*).
 * `as_latest`: image with the supplied tag will be tagged as latest (*optional*).

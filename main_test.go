@@ -71,6 +71,19 @@ build php -f php/Dockerfile --build-arg VERSION=7.2 --build-arg OS=debian --buil
 build php -f php/Dockerfile --build-arg VERSION=7.3 --build-arg OS=alpine --build-arg NAME=test -t docker.io/bitsbeats/image1:7.3-alpine-test -t docker.io/bitsbeats/image1:7.3-alpine-test-7 -t docker.io/bitsbeats/image2:7.3-alpine-test -t docker.io/bitsbeats/image2:7.3-alpine-test-7 -t localhost:5000/images/php:7.3-alpine-test -t localhost:5000/images/php:7.3-alpine-test-7
 build php -f php/Dockerfile --build-arg VERSION=7.3 --build-arg OS=debian --build-arg NAME=test -t docker.io/bitsbeats/image1:7.3-debian-test -t docker.io/bitsbeats/image1:7.3-debian-test-7 -t docker.io/bitsbeats/image2:7.3-debian-test -t docker.io/bitsbeats/image2:7.3-debian-test-7 -t localhost:5000/images/php:7.3-debian-test -t localhost:5000/images/php:7.3-debian-test-7
 build php -f php/Dockerfile --build-arg VERSION=8.3 --build-arg OS=centos --build-arg NAME=four -t docker.io/bitsbeats/image1:8.3-centos-four -t docker.io/bitsbeats/image1:8.3-centos-four-7 -t docker.io/bitsbeats/image2:8.3-centos-four -t docker.io/bitsbeats/image2:8.3-centos-four-7 -t localhost:5000/images/php:8.3-centos-four -t localhost:5000/images/php:8.3-centos-four-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=7.2 -t localhost:5000/images/php-custom:7.2 -t localhost:5000/images/php-custom:7.2-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=7.3 -t localhost:5000/images/php-custom:7.3 -t localhost:5000/images/php-custom:7.3-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=7.4 --build-arg SPECIAL=green -t localhost:5000/images/php-custom:7.4-green -t localhost:5000/images/php-custom:7.4-green-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=7.4 -t localhost:5000/images/php-custom:7.4 -t localhost:5000/images/php-custom:7.4-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=8.0 -t localhost:5000/images/php-custom:8.0 -t localhost:5000/images/php-custom:8.0-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=8.1 --build-arg SPECIAL=blue -t localhost:5000/images/php-custom:8.1-blue -t localhost:5000/images/php-custom:8.1-blue-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=8.1 -t localhost:5000/images/php-custom:8.1 -t localhost:5000/images/php-custom:8.1-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=8.2 --build-arg SPECIAL=blue -t localhost:5000/images/php-custom:8.2-blue -t localhost:5000/images/php-custom:8.2-blue-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=8.2 -t localhost:5000/images/php-custom:8.2 -t localhost:5000/images/php-custom:8.2-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=8.3 --build-arg SPECIAL=blue -t localhost:5000/images/php-custom:8.3-blue -t localhost:5000/images/php-custom:8.3-blue-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=8.3 -t localhost:5000/images/php-custom:8.3 -t localhost:5000/images/php-custom:8.3-7
+build php-custom -f php-custom/Dockerfile --build-arg VERSION=8.4 -t localhost:5000/images/php-custom:8.4 -t localhost:5000/images/php-custom:8.4-7
+build php-custom -f php-custom/Dockerfile -t localhost:5000/images/php-custom:latest -t localhost:5000/images/php-custom:7
 build python -f python/Dockerfile --build-arg VERSION=2.7 --build-arg OS=alpine -t localhost:5000/images/python:2.7-alpine -t localhost:5000/images/python:2.7-alpine-7
 build python -f python/Dockerfile --build-arg VERSION=2.7 --build-arg OS=stretch -t localhost:5000/images/python:2.7-stretch -t localhost:5000/images/python:2.7-stretch-7
 build python -f python/Dockerfile --build-arg VERSION=3.6 --build-arg OS=alpine -t localhost:5000/images/python:latest -t localhost:5000/images/python:3.6-alpine -t localhost:5000/images/python:3.6-alpine-7
@@ -104,6 +117,32 @@ push localhost:5000/images/alpine:multiply
 push localhost:5000/images/alpine:multiply-7
 push localhost:5000/images/busybox:7
 push localhost:5000/images/busybox:latest
+push localhost:5000/images/php-custom:7
+push localhost:5000/images/php-custom:7.2
+push localhost:5000/images/php-custom:7.2-7
+push localhost:5000/images/php-custom:7.3
+push localhost:5000/images/php-custom:7.3-7
+push localhost:5000/images/php-custom:7.4
+push localhost:5000/images/php-custom:7.4-7
+push localhost:5000/images/php-custom:7.4-green
+push localhost:5000/images/php-custom:7.4-green-7
+push localhost:5000/images/php-custom:8.0
+push localhost:5000/images/php-custom:8.0-7
+push localhost:5000/images/php-custom:8.1
+push localhost:5000/images/php-custom:8.1-7
+push localhost:5000/images/php-custom:8.1-blue
+push localhost:5000/images/php-custom:8.1-blue-7
+push localhost:5000/images/php-custom:8.2
+push localhost:5000/images/php-custom:8.2-7
+push localhost:5000/images/php-custom:8.2-blue
+push localhost:5000/images/php-custom:8.2-blue-7
+push localhost:5000/images/php-custom:8.3
+push localhost:5000/images/php-custom:8.3-7
+push localhost:5000/images/php-custom:8.3-blue
+push localhost:5000/images/php-custom:8.3-blue-7
+push localhost:5000/images/php-custom:8.4
+push localhost:5000/images/php-custom:8.4-7
+push localhost:5000/images/php-custom:latest
 push localhost:5000/images/php:7.2-alpine-test
 push localhost:5000/images/php:7.2-alpine-test-7
 push localhost:5000/images/php:7.2-debian-test
