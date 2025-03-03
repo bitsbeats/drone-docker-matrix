@@ -1,0 +1,14 @@
+custom_builds:
+  - { VERSION: "7.2" }
+  - { VERSION: "7.3" }
+  - { VERSION: "7.4" }
+  - { VERSION: "8.0" }
+  - { VERSION: "8.1" }
+  - { VERSION: "8.2" }
+  - { VERSION: "8.3" }
+  - { VERSION: "8.4" }
+  - { VERSION: "7.4", SPECIAL: green }
+  - { VERSION: "8.1", SPECIAL: blue }
+  - { VERSION: "8.2", SPECIAL: blue }
+  - { VERSION: "8.3", SPECIAL: blue }
+
